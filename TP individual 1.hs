@@ -57,5 +57,48 @@ ejemplo2= ("David Jones", [("cajita musical", 1)])
 ejemplo3 = ("Anne Bony", [("Doblones", 100), ("frasco de arena", 1)])
 
 -----------------TEMPORADA DE SAQUEOS--------------
+type Saqueo = (Tesoro->Bool)
+
+saqueoValioso :: Tesoro->Bool
+saqueoValioso tesoro = not(noEsTesoroValioso tesoro)
+
+saqueoObjetoEspecifico :: Tesoro->Nombre->Bool
+saqueoObjetoEspecifico (nombre,valor) objeto = nombre == objeto
+
+saqueoConCorazon :: Tesoro->Bool
+saqueoConCorazon tesoro = False
+
+saqueoComplejo :: Tesoro->Nombre->Bool
+saqueoComplejo tesoro objeto = saqueoValioso tesoro || saqueoObjetoEspecifico tesoro objeto
+
+saquear :: Saqueo->Pirata->Tesoro->Pirata
+saquear formaDeSaqueo (nombre,botin) tesoro = (nombre, botin ++ (filter formaDeSaqueo [tesoro]))
+
+--------------------NAVEGANDO LOS SIETE MARES--------------------
+type Tripulacion = [Pirata]
+type Barco = (Nombre,Tripulacion, Saqueo)
+type ElementoTipico = Tesoro
+type Isla = (Nombre, ElementoTipico)
+type Ciudad = (Nombre, Botin)
+
+nuevoPirata :: Barco->Pirata->Barco
+nuevoPirata  (nombre, tripulacion, saqueo) pirata = (nombre, tripulacion ++ [pirata], saqueo)
+
+abandonaPirata :: Barco->Pirata->Barco
+abandonaPirata (nombre, tripulacion, saqueo) pirata = (nombre, filter (/=pirata) tripulacion, saqueo)
+
+--ejemplo4 = ("Perla Negra", [ejemplo1, ejemplo3], _)
+--ejemplo5 = ("Holandes Errante", [ejemplo2], _)
+--ejemplo6 = ("Elizabeth Swann", [("moneda del cofre muerto", 100), ("espada de hierro", 50)]) --se sube al ejemplo4
+--ejemplo7 = ("Will Turner", ([("cuchillo que le regalo el padre", 5)]) --se sube al ejemplo4 pero luego abandona
+
+anclarEnIslaDeshabitada :: Barco -> Isla -> Barco
+anclarEnIslaDeshabitada (nombre, tripulacion, saqueo) (nombreIsla, elementotipico) = (nombre, map (saquear saqueo elementotipico) tripulacion, saqueo)
+
+atacarUnaCiudad :: Ciudad->Barco->Barco
+atacarUnaCiudad (nombre, botin) (nombreB, tripulacion, saqueo) = (nombreB, zipWith (saquear saqueo) botin tripulacion , saqueo)
+
+--abordarOtroBarcoEnAltamar ::
+--abordarOtroBarcoEnAltamar
 
 
